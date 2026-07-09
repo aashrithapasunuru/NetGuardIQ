@@ -1,0 +1,591 @@
+/* ==========================================================
+   NetGuardIQ v1.2
+   Professional SOC Dashboard
+========================================================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:"Segoe UI", Calibri, Arial, sans-serif;
+
+    background:#0F172A;
+
+    color:#F8FAFC;
+
+    display:flex;
+
+}
+
+/* ==========================================================
+                        Sidebar
+========================================================== */
+
+.sidebar{
+
+    width:260px;
+
+    min-height:100vh;
+
+    background:linear-gradient(180deg,#0B1120,#111827,#1E293B);
+
+    border-right:2px solid #334155;
+
+    padding:25px;
+
+}
+
+.logo{
+
+    text-align:center;
+
+    margin-bottom:40px;
+
+}
+
+.logo h2{
+
+    color:#38BDF8;
+
+    font-size:30px;
+
+    margin-bottom:8px;
+
+}
+
+.logo p{
+
+    color:#94A3B8;
+
+    font-size:14px;
+
+}
+
+.sidebar nav a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    text-decoration:none;
+
+    color:#CBD5E1;
+
+    padding:15px;
+
+    margin-bottom:10px;
+
+    border-radius:10px;
+
+    transition:.3s;
+
+    font-size:16px;
+
+}
+
+.sidebar nav a:hover{
+
+    background:#2563EB;
+
+    color:white;
+
+    transform:translateX(6px);
+
+    box-shadow:0 0 15px rgba(59,130,246,.5);
+
+}
+
+.sidebar nav a.active{
+
+    background:#1D4ED8;
+
+    color:white;
+
+}
+
+/* ==========================================================
+                    Main Content
+========================================================== */
+
+.main-content{
+
+    flex:1;
+
+    padding:30px;
+
+}
+
+/* ==========================================================
+                      Top Header
+========================================================== */
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:35px;
+
+}
+
+.topbar h1{
+
+    font-size:34px;
+
+}
+
+.topbar p{
+
+    margin-top:6px;
+
+    color:#94A3B8;
+
+}
+
+.status{
+
+    background:#14532D;
+
+    color:#DCFCE7;
+
+    padding:12px 22px;
+
+    border-radius:30px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-weight:bold;
+
+}
+
+/* ==========================================================
+                  Monitoring Animation
+========================================================== */
+
+.monitor-dot{
+
+    width:12px;
+
+    height:12px;
+
+    background:#22C55E;
+
+    border-radius:50%;
+
+    animation:pulse 1.4s infinite;
+
+}
+
+@keyframes pulse{
+
+0%{
+
+box-shadow:0 0 0 0 rgba(34,197,94,.7);
+
+}
+
+70%{
+
+box-shadow:0 0 0 12px rgba(34,197,94,0);
+
+}
+
+100%{
+
+box-shadow:0 0 0 0 rgba(34,197,94,0);
+
+}
+
+}
+
+/* ==========================================================
+                        Cards
+========================================================== */
+
+.cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+    margin-bottom:35px;
+
+}
+
+.card{
+
+    background:#1E293B;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    text-align:center;
+
+    transition:.35s;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+
+}
+
+.card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 12px 28px rgba(59,130,246,.35);
+
+}
+
+.card-icon{
+
+    font-size:34px;
+
+    color:#38BDF8;
+
+    margin-bottom:15px;
+
+}
+
+.card h3{
+
+    color:#CBD5E1;
+
+    margin-bottom:15px;
+
+}
+
+.card h2{
+
+    font-size:38px;
+
+    color:#60A5FA;
+
+}
+
+/* ==========================================================
+                      Buttons
+========================================================== */
+
+.actions{
+
+    margin: 25px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+
+}
+
+.actions form {
+	margin: 0;
+
+}	
+
+.actions button{
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 22px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    margin-right:10px;
+
+    margin-bottom:10px;
+
+    transition:.3s;
+
+    display: flex;
+
+    align-items: center;
+    
+    gap: 8px;
+
+}
+
+.actions button i{
+
+    margin-right:8px;
+
+}
+
+.actions button:hover{
+
+    background:#1d4ed8;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 18px rgba(37,99,235,.5);
+
+}
+
+/* ==========================================================
+                        Panels
+========================================================== */
+
+.panel{
+
+    background:#1E293B;
+
+    padding:25px;
+
+    border-radius:15px;
+
+    margin-bottom:30px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+
+}
+
+.panel h2{
+
+    margin-bottom:20px;
+
+    color:#38BDF8;
+
+}
+
+.panel h2 i{
+
+    margin-right:10px;
+
+}
+
+/* ==========================================================
+                        Tables
+========================================================== */
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+thead{
+
+    background:#334155;
+
+}
+
+th{
+
+    padding:16px;
+
+    text-align:left;
+
+}
+
+td{
+
+    padding:16px;
+
+    border-bottom:1px solid #475569;
+
+}
+
+tbody tr:hover{
+
+    background:#273549;
+
+}
+
+/* ==========================================================
+                        Badges
+========================================================== */
+
+.badge{
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+}
+
+.success{
+
+    background:#14532D;
+
+    color:#86EFAC;
+
+}
+
+.critical{
+
+    background:#7F1D1D;
+
+    color:#FECACA;
+
+}
+
+.high{
+
+    background:#7C2D12;
+
+    color:#FDBA74;
+
+}
+
+.medium{
+
+    background:#854D0E;
+
+    color:#FDE68A;
+
+}
+
+.low{
+
+    background:#1E3A8A;
+
+    color:#BFDBFE;
+
+}
+
+/* ==========================================================
+                        Footer
+========================================================== */
+
+.footer{
+
+    margin-top:40px;
+
+    text-align:center;
+
+    color:#94A3B8;
+
+    font-size:14px;
+
+    padding:20px;
+
+    border-top:1px solid #334155;
+
+}
+
+/* ==========================================================
+                    Responsive
+========================================================== */
+
+@media(max-width:1200px){
+
+.cards{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:768px){
+
+body{
+
+flex-direction:column;
+
+}
+
+.sidebar{
+
+width:100%;
+
+min-height:auto;
+
+}
+
+.topbar{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:15px;
+
+}
+
+.cards{
+
+grid-template-columns:1fr;
+
+}
+
+.actions button{
+
+width:100%;
+
+}
+
+}
+
+/* ==========================================================
+                    Page Header
+========================================================== */
+
+.page-header{
+
+    margin-bottom:30px;
+
+}
+
+.page-header h1{
+
+    font-size:32px;
+
+    color:#38BDF8;
+
+    margin-bottom:8px;
+
+}
+
+.page-header p{
+
+    color:#94A3B8;
+
+    font-size:15px;
+
+}
+
+.ipv4 {
+    background: #14532D;
+    color: #86EFAC;
+}
+
+.ipv6 {
+    background: #1E3A8A;
+    color: #BFDBFE;
+}
+
+.feed.event {
+	padding: 8px;
+	border-bottom: 1px solid #ddd;
+	font-size: 14px;
+}

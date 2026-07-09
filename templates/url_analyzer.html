@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NetGuardIQ - URL Threat Analyzer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="main-content">
+
+    <header class="topbar">
+
+        <div>
+
+            <h1>
+                <i class="fa-solid fa-link"></i>
+                URL Threat Analyzer
+            </h1>
+
+            <p>
+                Analyze URLs using phishing detection rules and live threat intelligence.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <section class="panel">
+
+        <h2>
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            Analyze URL
+
+        </h2>
+
+        <form action="/analyze-url" method="POST">
+
+            <input
+                type="text"
+                name="url"
+                placeholder="https://example.com"
+                required
+                style="width:75%;padding:12px;font-size:16px;">
+
+            <button type="submit">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+                Analyze
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    {% if result %}
+
+    <section class="cards">
+
+        <div class="card">
+
+            <h3>Overall Status</h3>
+
+            {% if result.status=="Safe" %}
+
+                <h2 style="color:#28a745;">
+                    🟢 SAFE
+                </h2>
+
+            {% elif result.status=="Suspicious" %}
+
+                <h2 style="color:#ffc107;">
+                    🟡 SUSPICIOUS
+                </h2>
+
+            {% else %}
+
+                <h2 style="color:#dc3545;">
+                    🔴 MALICIOUS
+                </h2>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Risk Score</h3>
+
+            <h2>{{ result.risk_score }}/100</h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Severity</h3>
+
+            <h2>{{ result.severity }}</h2>
+
+        </div>
+
+    </section>
+
+
+    <section class="panel">
+
+        <h2>
+
+            <i class="fa-solid fa-globe"></i>
+
+            URL Information
+
+        </h2>
+
+        <table>
+
+            <tr>
+
+                <th style="width:180px;">URL</th>
+
+                <td>{{ result.url }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Status</th>
+
+                <td>{{ result.status }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Severity</th>
+
+                <td>{{ result.severity }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Risk Score</th>
+
+                <td>{{ result.risk_score }}/100</td>
+
+            </tr>
+
+        </table>
+
+    </section>
+
+
+    <section class="panel">
+
+        <h2>
+
+            <i class="fa-solid fa-circle-exclamation"></i>
+
+            Detection Reasons
+
+        </h2>
+
+        <ul>
+
+            {% for reason in result.reasons %}
+
+                <li>{{ reason }}</li>
+
+            {% endfor %}
+
+        </ul>
+
+    </section>
+
+
+    <section class="panel">
+
+        <h2>
+
+            <i class="fa-solid fa-lightbulb"></i>
+
+            Recommendation
+
+        </h2>
+
+        {% if result.status=="Safe" %}
+
+            <p>
+                ✅ No significant phishing indicators detected.
+                Continue with normal caution.
+            </p>
+
+        {% elif result.status=="Suspicious" %}
+
+            <p>
+                ⚠ Verify the sender and destination before opening this URL.
+            </p>
+
+        {% else %}
+
+            <p>
+                🚨 This URL appears malicious.
+                Do NOT open it. Block access and investigate immediately.
+            </p>
+
+        {% endif %}
+
+    </section>
+
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>

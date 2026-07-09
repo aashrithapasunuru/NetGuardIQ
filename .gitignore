@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+
+# SQLite Database
+database/*.db
+
+# Environment Variables
+.env
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# macOS
+.DS_Store
+
+# Linux
+*.swp
+
+# Logs
+*.log

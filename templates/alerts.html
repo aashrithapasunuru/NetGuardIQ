@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Threat Center | NetGuardIQ</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+
+    <div class="sidebar">
+
+        <div class="logo">
+            <h2>🛡 NetGuardIQ</h2>
+            <p>AI-Assisted ARP / MITM Detection</p>
+        </div>
+
+        <nav>
+
+            <a href="{{ url_for('dashboard') }}">
+                📊 Security Dashboard
+            </a>
+
+            <a href="{{ url_for('network_inventory') }}">
+                🌐 Network Inventory
+            </a>
+
+            <a href="{{ url_for('alerts') }}" class="active">
+                🚨 Threat Center
+            </a>
+
+	    <a href="{{ url_for('timeline') }}">
+                📅 Attack Timeline
+            </a>
+
+	    <a href="#">
+                🤖 AI Security Analyst
+            </a>
+
+	    <a href="#">
+                📄 Security Reports
+            </a>
+
+	    <a href="#">
+                ⚙️ System Configuration
+            </a>
+
+        </nav>
+
+    </div>
+
+    <!-- Main Content -->
+
+    <div class="main-content">
+
+        <div class="page-header">
+
+            <h1>🚨 Threat Center</h1>
+
+            <p>
+                View and investigate all security alerts detected by NetGuardIQ.
+            </p>
+
+        </div>
+
+        <div class="panel">
+
+            <h2>Detected Security Alerts</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Timestamp</th>
+                        <th>Alert Type</th>
+                        <th>Severity</th>
+                        <th>Risk Score</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% if alerts %}
+
+                    {% for alert in alerts %}
+
+                    <tr>
+
+                        <td>{{ alert.timestamp }}</td>
+
+                        <td>{{ alert.alert_type }}</td>
+
+                        <td>
+
+                            {% if alert.severity == "Critical" %}
+                                <span class="badge critical">{{ alert.severity }}</span>
+
+                            {% elif alert.severity == "High" %}
+                                <span class="badge high">{{ alert.severity }}</span>
+
+                            {% elif alert.severity == "Medium" %}
+                                <span class="badge medium">{{ alert.severity }}</span>
+
+                            {% else %}
+                                <span class="badge low">{{ alert.severity }}</span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>{{ alert.risk_score }}</td>
+
+                        <td>
+                            <span class="badge success">
+                                {{ alert.status }}
+                            </span>
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td colspan="5"
+                            style="text-align:center;padding:30px;color:#94A3B8;">
+
+                            No security alerts detected.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="footer">
+
+            NetGuardIQ v1.2 • AI-Assisted ARP / MITM Detection Platform
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NetGuardIQ</title>
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <!-- ================= Sidebar ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+                NetGuardIQ
+ 
+            </h2>
+            <p>Version 1.2</p>
+
+        </div>
+
+        <nav>
+
+            <a href="/" class="active">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                Security Dashboard
+
+            </a>
+
+            <a href="{{ url_for('network_inventory') }}">
+
+                <i class="fa-solid fa-network-wired"></i>
+
+                Network Inventory
+
+            </a>
+
+	    <a href="{{ url_for('alerts') }}">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                Threat Center
+
+            </a>
+
+	    <a href="{{ url_for('timeline') }}">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                Attack Timeline
+
+            </a>
+
+	    <a href="#">
+
+                <i class="fa-solid fa-robot"></i>
+
+                AI Security Analyst
+
+            </a>
+
+	    <a href="#">
+
+                <i class="fa-solid fa-file-lines"></i>
+
+                Security Reports
+
+            </a>
+
+	    <a href="#">
+
+                <i class="fa-solid fa-gear"></i>
+
+                System Configuration
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- ================= Main ================= -->
+
+    <main class="main-content">
+
+        <!-- Header -->
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>NetGuardIQ SOC Dashboard</h1>
+
+                <p>
+
+                    AI-Assisted Network Threat Detection &
+                    Analyst Intelligence
+
+                </p>
+
+            </div>
+
+	    <div class="status-card">
+		    {% if monitoring_status == "ACTIVE" %}
+
+		        <h3>🟢 Monitoring Active</h3>
+		    {% else %}
+		        
+		        <h3>🔴 Monitoring stopped</h3>
+
+	            {% endif %}
+	    </div>
+
+
+        </header>
+
+
+        <!-- Summary Cards -->
+
+        <section class="cards">
+
+            <div class="card">
+
+                <i class="fa-solid fa-network-wired card-icon"></i>
+
+                <h3> Discovered Hosts</h3>
+
+		<h2>{{ device_count }}</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fa-solid fa-triangle-exclamation card-icon"></i>
+
+                <h3>Threat Events</h3>
+
+		<h2>{{ threat_count }}</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fa-solid fa-shield-virus card-icon"></i>
+
+                <h3>Security Score</h3>
+
+		<h2>{{ security_score }}</h2>
+
+            </div>
+
+            <div class="card">
+
+                <i class="fa-solid fa-server card-icon"></i>
+
+                <h3>Gateway Status</h3>
+
+                <h3>
+			{% if gateway_status %}
+			    {% set status_list = gateway_status.values() | list %}
+
+			    {% if "DOWN" in status_list %}
+
+			           ⚠️  Risk
+
+		            {% else %}
+
+			           🟢 Healthy
+
+		            {% endif %}
+
+			{% else %}
+			    🟢 Healthy
+			{% endif %}
+		</h3>
+
+            </div>
+
+        </section>
+
+
+        <!-- Action Buttons -->
+
+        <section class="actions">
+
+          <form action="/scan" method="post">
+
+            <button type="submit">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                  Discover Assets
+
+            </button>
+
+	  </form>
+
+            <form action="/start_monitoring" method="post">
+
+              <button type="submit">
+
+                  <i class="fa-solid fa-play"></i>
+
+                   Start Monitoring
+
+              </button>
+
+             </form>
+
+           <form action="/stop_monitoring" method="post">
+
+             <button type="submit">
+
+                <i class="fa-solid fa-stop"></i>
+
+                   Stop Monitoring
+
+               </button>
+
+           </form>
+
+           <form action="/sync" method="post">
+
+             <button type="submit">
+
+                <i class="fa-solid fa-rotate-right"></i>
+
+                Sync Dashboard
+
+              </button>
+
+           </form>
+
+           <form action="/analyze" method="post">
+
+                  <button type="submit">
+                       <i class="fa-solid fa-robot"></i>
+                       Analyze Threat
+                  </button>
+           </form>
+
+	   <form action="/simulate_attack" method="post">
+
+		   <button type="submit">
+
+			   <i class="fa-solid fa-bug"></i>
+
+			   Simulate ARP Attack
+		   </button>
+
+	   </form>
+
+	   <form action="/url-analyzer" method="get">
+
+		   <button type="submit">
+
+			   <i class="fa-solid fa-link"></i>
+
+			   URL & Phishing Analyzer
+
+		   </button>
+	   </form>
+
+        </section>
+
+
+        <!-- Recent Alerts -->
+
+        <section class="panel">
+
+            <h2>
+
+                <i class="fa-solid fa-bell"></i>
+
+                Threat Center
+
+            </h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Time</th>
+
+                        <th>Alert</th>
+
+                        <th>Severity</th>
+
+                        <th>Risk</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tbody>
+			    {% for event in live_feed[:10] %}
+
+			    <tr>
+				    <td>{{ event.timestamp }}</td>
+
+				    <td>
+					    {{ event.event_type }}
+				    </td>
+
+				    <td>
+					    <span class="badge 
+							 {% if event.severity == 'high' %}critical
+                                                         {% elif event.severity == 'medium' %}warning
+                                                         {% else %}low
+                                                         {% endif %}">
+                                                         {{ event.severity }}
+					    </span>
+				    </td>
+
+				    <td>
+					    {% if event.severity == 'high' %}90
+                                            {% elif event.severity == 'medium' %}60
+                                            {% else %}30
+                                            {% endif %}
+				    </td>
+			    </tr>
+			    {% endfor %}
+		    </tbody>
+
+            </table>
+
+        </section>
+
+
+        <!-- Devices -->
+
+        <section class="panel">
+
+            <h2>
+
+                <i class="fa-solid fa-satellite-dish"></i>
+
+		Live Monitoring Feed
+
+	    </h2>
+
+	    <div id="live-feed">
+
+		    {% if live_feed %}
+
+		        {% for event in live_feed %}
+
+
+		        <div class="feed-event">
+
+				<strong>{{ event.timestamp }}</strong>
+
+				<span class="badge">
+
+
+				        {{ event.severity }}
+				</span>
+
+				{{ event.event_type }}
+			</div>
+
+			{% endfor %}
+
+	            {% else %}
+
+		      
+		        <p> No monitoring events yet.</p>
+
+		    {% endif %}
+
+	    </div>
+
+        </section>
+
+
+        <!-- AI -->
+
+        <section class="panel">
+
+            <h2>
+
+                <i class="fa-solid fa-robot"></i>
+
+                AI Security Analyst
+
+            </h2>
+
+            <p>
+
+                Waiting for threat analysis....
+                Latest AI explanations will appear here after a threat is detected.
+
+            </p>
+
+        </section>
+
+
+        <!-- Footer -->
+
+        <footer class="footer">
+
+            NetGuardIQ v1.2
+	    <br>
+            AI-Assisted Network Threat Detection & Analyst Intelligence.
+	    <br>
+            Powered by Python • Flask • SQLite
+
+        </footer>
+
+    </main>
+
+</body>
+
+</html>
