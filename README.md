@@ -276,8 +276,7 @@ Testing included:
 | AI Integration     | OpenAI API     |
 | Virtualization     | VirtualBox     |
 | Security Testing   | Kali Linux     |
-| Vulnerable Testing | Metasploitable |
-| Endpoint Testing   | Windows        |
+| Endpoint Testing   | Windows, Ubuntu        |
 | Version Control    | Git / GitHub   |
 
 ---
