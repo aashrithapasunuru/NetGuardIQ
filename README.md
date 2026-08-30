@@ -375,25 +375,6 @@ The application can also be accessed through the VM's network interface when req
 
 ---
 
-## 🔎 Testing Performed
-
-The project was tested using practical cybersecurity lab scenarios including:
-
-* Network host discovery
-* Device discovery
-* Network inventory collection
-* ARP monitoring
-* ARP spoofing detection
-* Security alert generation
-* Risk scoring
-* AI-assisted security alert analysis
-* Incident timeline generation
-* Security reporting
-* URL analysis
-* Network connectivity validation across laboratory systems
-
----
-
 ## 📊 Demonstrated Security Workflow
 
 The project demonstrated the following SOC-oriented workflow:
