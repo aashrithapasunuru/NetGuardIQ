@@ -42,16 +42,12 @@
                 📅 Attack Timeline
             </a>
 
-	    <a href="#">
+	    <a href="{{ url_for('ai_analyst') }}">
                 🤖 AI Security Analyst
             </a>
 
-	    <a href="#">
+	    <a href="{{ url_for('reports') }}">
                 📄 Security Reports
-            </a>
-
-	    <a href="#">
-                ⚙️ System Configuration
             </a>
 
         </nav>
@@ -87,6 +83,7 @@
                         <th>Severity</th>
                         <th>Risk Score</th>
                         <th>Status</th>
+			<th>AI Analysis</th>
 
                     </tr>
 
@@ -130,7 +127,43 @@
                             </span>
                         </td>
 
-                    </tr>
+			<td>
+
+    
+				{% if alert.ai_explanation %}
+
+        
+				<a href="{{ url_for('ai_analyst', alert_id=alert.id) }}">
+            
+					🧠 View AI Analysis
+        
+				</a>
+
+    
+				{% else %}
+
+        
+				<form method="POST"
+              
+					action="{{ url_for('analyze_alert_route', alert_id=alert.id) }}">
+
+            
+					<button type="submit">
+                
+						🤖 Analyze with AI
+            
+					</button>
+
+        
+				</form>
+
+    
+				{% endif %}
+
+
+			</td>
+
+		    </tr>
 
                     {% endfor %}
 
@@ -138,7 +171,7 @@
 
                     <tr>
 
-                        <td colspan="5"
+                        <td colspan="6"
                             style="text-align:center;padding:30px;color:#94A3B8;">
 
                             No security alerts detected.

@@ -50,37 +50,6 @@ def push_event(event):
         event_id = None
 
 
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            INSERT INTO alerts (
-                timestamp,
-                alert_type,
-                description,
-                severity,
-                risk_score,
-                status,
-                ai_explanation
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (
-
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            event.get("attack_type", event.get("event_type", "Unknown")),
-            event.get("message", ""),
-            event.get("severity", "INFO"),
-            event.get("risk_score", 0),
-            "OPEN",
-            ""
-            ))
-        conn.commit()
-        conn.close()
-
-    except Exception as e:
-        print("[EVENT MANAGER ERROR] Alert insert failed:", e)
-
     event["event_id"] = event_id
 
     LIVE_FEED.append(event)

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>AI Security Analyst - NetGuardIQ</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        .ai-container {
+            padding: 30px;
+        }
+
+        .alert-list {
+            margin-bottom: 25px;
+        }
+
+        .alert-item {
+            display: block;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #333;
+            text-decoration: none;
+        }
+
+        .analysis-box {
+            padding: 25px;
+            border: 1px solid #333;
+            white-space: normal;
+        }
+
+        .alert-details {
+            margin-bottom: 20px;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .ai-text {
+            line-height: 1.6;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="ai-container">
+
+    <h1>🤖 AI Security Analyst</h1>
+
+    <p>
+        AI-assisted cybersecurity alert investigation.
+    </p>
+
+    <hr>
+
+    <h2>Security Alerts</h2>
+
+    <div class="alert-list">
+
+        {% if alerts %}
+
+            {% for alert in alerts %}
+
+                <a class="alert-item"
+                   href="{{ url_for('ai_analyst', alert_id=alert['id']) }}">
+
+                    <strong>
+                        Alert #{{ alert['id'] }}
+                    </strong>
+
+                    — {{ alert['alert_type'] }}
+
+                    — {{ alert['severity'] }}
+
+                    — {{ alert['status'] }}
+
+                </a>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No security alerts available.</p>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if selected_alert %}
+
+        <div class="analysis-box">
+
+            <h2>
+                Alert #{{ selected_alert['id'] }}
+            </h2>
+
+            <div class="alert-details">
+
+                <p>
+                    <strong>Type:</strong>
+                    {{ selected_alert['alert_type'] }}
+                </p>
+
+                <p>
+                    <strong>Description:</strong>
+                    {{ selected_alert['description'] }}
+                </p>
+
+                <p>
+                    <strong>Severity:</strong>
+                    {{ selected_alert['severity'] }}
+                </p>
+
+                <p>
+                    <strong>Risk Score:</strong>
+                    {{ selected_alert['risk_score'] }}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    <span class="status">
+                        {{ selected_alert['status'] }}
+                    </span>
+                </p>
+
+            </div>
+
+            <hr>
+
+            <h2>🧠 AI Analysis</h2>
+
+            {% if selected_alert['ai_explanation'] %}
+
+                <div class="ai-text">
+
+                    {{ selected_alert['ai_explanation'] | replace('\n', '<br>') | safe }}
+
+                </div>
+
+            {% else %}
+
+                <p>
+                    ⚠️ This alert has not been analyzed by AI yet.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+
+    <br>
+
+    <a href="{{ url_for('dashboard') }}">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+</body>
+</html>

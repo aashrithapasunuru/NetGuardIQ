@@ -97,7 +97,7 @@ def process_packet(packet):
             f"Possible ARP spoofing detected: "
             f"IP {ip_address}, "
             f"Old MAC {stored_mac}, "
-            f"New MAC {mac_addres}"
+            f"New MAC {mac_address}"
             ),
         "source": "ARP_MONITOR",
         "details": description,

@@ -6,6 +6,7 @@ from engines.timeline import add_timeline_event
 from engines.arp_monitor import start_arp_monitor, stop_arp_monitor
 import socket
 import sys
+import os
 from engines.event_manager import get_status, set_status
 from engines.event_manager import ( 
                                    get_live_feed,
@@ -15,15 +16,20 @@ from engines.event_manager import (
                                    )
 from engines.arp_simulator import simulate_attack
 from engines.url_analyzer import analyze_url
+from flask import jsonify
+from flask_cors import CORS
+
 
 
 print(sys.executable)
 
 app = Flask(__name__)
+CORS(app)
 
 HOSTNAME = socket.gethostname()
 
 monitoring = False
+monitor_process = None
 
 
 @app.route("/")
@@ -80,7 +86,8 @@ def scan():
   )
 
     subprocess.run(
-            [sys.executable, "engines/discovery.py"]
+            ["sudo", sys.executable, "-m", "engines.discovery"],
+            cwd=os.path.dirname(os.path.abspath(__file__))
             )
     return redirect(url_for("dashboard"))
 
@@ -91,15 +98,20 @@ def scan():
 def start_monitoring():
 
     global monitoring
-    global monitor_thread
+    global monitor_process
 
     if not monitoring:
+
+        monitor_process = subprocess.Popen([
+            "sudo",
+            sys.executable,
+            "-m",
+            "engines.arp_monitor"
+            ], cwd=os.path.dirname(os.path.abspath(__file__)))
 
         monitoring = True
 
         set_status("ACTIVE")
-
-        start_arp_monitor()
 
         add_timeline_event(
                 incident_id=1,
@@ -122,14 +134,23 @@ def start_monitoring():
 def stop_monitoring():
 
     global monitoring
+    global monitor_process
 
-    monitoring = False
+    if monitor_process is not None:
 
-    set_status("STOPPED")
+        subprocess.run([
+            "sudo",
+            "pkill",
+            "-f",
+            "engines.arp_monitor"
+            ])
 
-    stop_arp_monitor()
+        monitor_process = None
 
-    add_timeline_event(
+        monitoring = False
+        set_status("STOPPED")
+
+        add_timeline_event(
             incident_id=1,
             event_type="MON",
             attack_type="MONITORING",
@@ -148,10 +169,10 @@ def stop_monitoring():
 def sync_dashboard():
 
     # Refresh device inventory
-    subprocess.run([sys.executable, "engines/discovery.py"])
+    subprocess.run([sys.executable, "-m", "engines.discovery"])
 
     # Run ARP analysis once
-    subprocess.run([sys.executable, "engines/arp_monitor.py"])
+    subprocess.run([sys.executable, "-m", "engines.arp_monitor"])
 
     return redirect(url_for("dashboard"))
 
@@ -162,6 +183,21 @@ def analyze():
     subprocess.run([sys.executable, "engines/ai_analyzer.py"])
 
     return redirect(url_for("dashboard"))
+
+
+@app.route("/analyze-alert/<int:alert_id>", methods=["POST"])
+def analyze_alert_route(alert_id):
+
+    from engines.ai_analyzer import analyze_alert
+
+    success = analyze_alert(alert_id)
+
+    if success:
+        return redirect(
+            url_for("ai_analyst", alert_id=alert_id)
+        )
+
+    return redirect(url_for("alerts"))
 
 
 
@@ -189,6 +225,7 @@ def network_inventory():
 
         if ":" in device["ip_address"]:
             device["ip_version"] = "IPv6"
+
         else:
             device["ip_version"] = "IPv4"
 
@@ -250,6 +287,183 @@ def timeline():
     )
 
 
+
+@app.route("/ai-analyst")
+def ai_analyst():
+
+    conn = sqlite3.connect("database/netguardiq.db")
+    conn.row_factory = sqlite3.Row
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM alerts
+        ORDER BY timestamp DESC
+    """)
+
+    alerts = cursor.fetchall()
+
+    selected_alert = None
+
+    alert_id = request.args.get("alert_id")
+
+    if alert_id:
+        cursor.execute("""
+           SELECT *
+           FROM alerts
+           WHERE id = ?
+           """, (alert_id,))
+
+        selected_alert = cursor.fetchone()
+
+    elif alerts:
+        selected_alert = alerts[0]
+
+
+    conn.close()
+
+    return render_template(
+        "ai_analyst.html",
+        alerts=alerts,
+        selected_alert=selected_alert
+    )
+
+
+@app.route("/reports")
+def reports():
+
+    conn = sqlite3.connect("database/netguardiq.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    # ----------------------------------------------------
+    # Overall counts
+    # ----------------------------------------------------
+
+    cursor.execute("SELECT COUNT(*) FROM alerts")
+    alert_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM timeline")
+    event_count = cursor.fetchone()[0]
+
+    # ----------------------------------------------------
+    # Severity counts
+    # ----------------------------------------------------
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM alerts
+        WHERE UPPER(severity) = 'CRITICAL'
+    """)
+    critical_count = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM alerts
+        WHERE UPPER(severity) = 'HIGH'
+    """)
+    high_count = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM alerts
+        WHERE UPPER(severity) = 'MEDIUM'
+    """)
+    medium_count = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM alerts
+        WHERE UPPER(severity) = 'LOW'
+    """)
+    low_count = cursor.fetchone()[0]
+
+    # ----------------------------------------------------
+    # Status counts
+    # ----------------------------------------------------
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM alerts
+        WHERE UPPER(status) = 'OPEN'
+    """)
+    open_count = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM alerts
+        WHERE UPPER(status) = 'PROCESSED'
+    """)
+    processed_count = cursor.fetchone()[0]
+
+    # ----------------------------------------------------
+    # Risk score statistics
+    # ----------------------------------------------------
+
+    cursor.execute("""
+        SELECT
+            COALESCE(AVG(risk_score), 0),
+            COALESCE(MAX(risk_score), 0)
+        FROM alerts
+    """)
+
+    average_risk, maximum_risk = cursor.fetchone()
+
+    # ----------------------------------------------------
+    # Alert type summary
+    # ----------------------------------------------------
+
+    cursor.execute("""
+        SELECT
+            alert_type,
+            COUNT(*) AS count
+        FROM alerts
+        GROUP BY alert_type
+        ORDER BY count DESC
+    """)
+
+    alert_types = cursor.fetchall()
+
+    # ----------------------------------------------------
+    # Recent alerts
+    # ----------------------------------------------------
+
+    cursor.execute("""
+        SELECT
+            id,
+            timestamp,
+            alert_type,
+            severity,
+            risk_score,
+            status
+        FROM alerts
+        ORDER BY id DESC
+        LIMIT 10
+    """)
+
+    recent_alerts = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "reports.html",
+        alert_count=alert_count,
+        event_count=event_count,
+        critical_count=critical_count,
+        high_count=high_count,
+        medium_count=medium_count,
+        low_count=low_count,
+        open_count=open_count,
+        processed_count=processed_count,
+        average_risk=round(average_risk, 1),
+        maximum_risk=maximum_risk,
+        alert_types=alert_types,
+        recent_alerts=recent_alerts
+    )
+
+
+
 @app.route("/simulate_attack", methods=["POST"])
 def simulate_attack_route():
 
@@ -278,11 +492,31 @@ def analyze_url_route():
             )
 
 
+@app.route("/api/analyze-url", methods=["POST"])
+def api_analyze_url():
+
+    url = request.form.get("url", "").strip()
+
+    if not url:
+        return jsonify({
+            "success": False,
+            "message": "URL is required"
+        }), 400
+
+    result = analyze_url(url)
+
+    return jsonify({
+        "success": True,
+        "result": result
+    })
+
+
 
 
 if __name__ == "__main__":
     app.run(
             host="0.0.0.0",
             port=5001,
-            debug=False, 
-            use_reloader=False)
+            debug=False,
+            use_reloader=False
+            )

@@ -2,7 +2,7 @@ import sqlite3
 from datetime import datetime
 import os
 
-from os_fingerprint import fingerprint_device
+from engines.os_fingerprint import fingerprint_device
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, "database", "netguardiq.db")

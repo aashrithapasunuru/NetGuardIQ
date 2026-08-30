@@ -1,7 +1,7 @@
 import sqlite3
 import socket
 from datetime import datetime
-
+from engines.ai_analyzer import analyze_alert
 from engines.timeline import add_timeline_event
 
 
@@ -69,6 +69,8 @@ def create_alert(alert_type, description, severity, risk_score):
 
     conn.commit()
     conn.close()
+
+    analyze_alert(incident_id)
 
     # ----------------------------------------------------
     # Determine Event Prefix

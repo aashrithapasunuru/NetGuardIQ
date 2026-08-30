@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Reports - NetGuardIQ</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+	<div class="reports-page">
+		<h1>📄 Security Reports</h1>
+
+
+		<p>Security reports and threat summaries.</p>
+
+
+		<hr>
+
+
+		<h2>Security Overview</h2>
+
+
+		<p><strong>Total Alerts:</strong> {{ alert_count }}</p>
+
+		<p><strong>Total Timeline Events:</strong> {{ event_count }}</p>
+
+
+		<hr>
+
+
+		<h2>Severity Summary</h2>
+
+
+		<p>🔴 <strong>Critical:</strong> {{ critical_count }}</p>
+
+		<p>🟠 <strong>High:</strong> {{ high_count }}</p>
+
+		<p>🟡 <strong>Medium:</strong> {{ medium_count }}</p>
+
+		<p>🟢 <strong>Low:</strong> {{ low_count }}</p>
+
+
+		<hr>
+
+
+		<h2>Alert Status</h2>
+
+
+		<p><strong>Open:</strong> {{ open_count }}</p>
+
+		<p><strong>Processed:</strong> {{ processed_count }}</p>
+
+
+		<hr>
+
+
+		<h2>Risk Overview</h2>
+
+
+		<p><strong>Average Risk Score:</strong> {{ average_risk }}</p>
+
+		<p><strong>Maximum Risk Score:</strong> {{ maximum_risk }}</p>
+
+
+		<hr>
+
+
+		<h2>Detection Summary</h2>
+
+
+		{% if alert_types %}
+
+
+		<table border="1" cellpadding="8" cellspacing="0">
+
+    
+			<tr>
+        
+				<th>Alert Type</th>
+        
+				<th>Count</th>
+    
+			</tr>
+
+    
+			{% for item in alert_types %}
+
+    
+			<tr>
+        
+				<td>{{ item["alert_type"] }}</td>
+        
+				<td>{{ item["count"] }}</td>
+    
+			</tr>
+
+    
+			{% endfor %}
+
+
+		</table>
+
+
+		{% else %}
+
+
+		<p>No detections recorded.</p>
+
+
+		{% endif %}
+
+
+		<hr>
+
+
+		<h2>Recent Incidents</h2>
+
+
+		{% if recent_alerts %}
+
+
+		<table border="1" cellpadding="8" cellspacing="0">
+
+    
+			<tr>
+        
+				<th>ID</th>
+        
+				<th>Timestamp</th>
+        
+				<th>Alert Type</th>
+        
+				<th>Severity</th>
+        
+				<th>Risk Score</th>
+        
+				<th>Status</th>
+    
+			</tr>
+
+    
+			{% for alert in recent_alerts %}
+
+    
+			<tr>
+
+        
+				<td>{{ alert["id"] }}</td>
+
+        
+				<td>{{ alert["timestamp"] }}</td>
+
+        
+				<td>{{ alert["alert_type"] }}</td>
+
+        
+				<td>{{ alert["severity"] }}</td>
+
+        
+				<td>{{ alert["risk_score"] }}</td>
+
+        
+				<td>{{ alert["status"] }}</td>
+
+    
+			</tr>
+
+    
+			{% endfor %}
+
+
+		</table>
+
+
+		{% else %}
+
+
+		<p>No incidents recorded.</p>
+
+
+		{% endif %}
+
+
+		<br>
+
+
+		<p>
+    
+		<a href="{{ url_for('timeline') }}">View Timeline</a>
+
+		</p>
+
+
+		<p>
+    
+		<a href="{{ url_for('alerts') }}">View Alerts</a>
+
+		</p>
+
+
+		<p>
+    
+		<a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+
+		</p>
+	</div>
+
+</body>
+</html>
